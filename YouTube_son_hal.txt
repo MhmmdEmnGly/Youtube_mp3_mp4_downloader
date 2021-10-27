@@ -1,0 +1,77 @@
+from pytube import YouTube
+from PyQt5 import QtCore, QtGui, QtWidgets
+import os
+from moviepy.editor import *
+import sys
+
+class Ui_Form(object):
+    def setupUi(self, Form):
+        Form.setObjectName("Form")
+        Form.resize(400, 300)
+        self.lineEdit = QtWidgets.QLineEdit(Form)
+        self.lineEdit.setGeometry(QtCore.QRect(10, 60, 271, 20))
+        self.lineEdit.setObjectName("lineEdit")
+        self.pushButton = QtWidgets.QPushButton(Form)
+        self.pushButton.setGeometry(QtCore.QRect(300, 60, 75, 23))
+        self.pushButton.setObjectName("pushButton")
+        self.label = QtWidgets.QLabel(Form)
+        self.label.setGeometry(QtCore.QRect(10, 30, 91, 16))
+        self.label.setObjectName("label")
+
+        self.retranslateUi(Form)
+        QtCore.QMetaObject.connectSlotsByName(Form)
+
+    def retranslateUi(self, Form):
+        _translate = QtCore.QCoreApplication.translate
+        Form.setWindowTitle(_translate("Form", "Form"))
+        self.pushButton.setText(_translate("Form", "İndir"))
+        self.label.setText(_translate("Form", "Lütfen URL giriniz"))
+        self.pushButton.clicked.connect(self.donustur)
+
+    def donustur(self):
+
+        yt = YouTube(self.lineEdit.text())
+
+        stream = yt.streams.filter().first()
+        stream.download('C:\\Users\\90507\\Downloads')
+        print(f"Video Başlığı: {yt.title}")
+
+        isim = str(yt.title)
+
+        newMetin = ""
+
+        for i in isim:
+            if (i == "."):
+                pass
+            else:
+                newMetin += i
+
+        isim = newMetin + ".mp4"
+        newMetin = newMetin + ".mp3"
+
+        a = "C:\\Users\\90507\\Downloads\\%s" % (isim)
+        b = "C:\\Users\\90507\\Downloads\\%s" % (newMetin)
+
+        mp4_file = a
+        mp3_file = b
+
+        videoclip = VideoFileClip(mp4_file)
+        audioclip = videoclip.audio
+        audioclip.write_audiofile(mp3_file)
+        audioclip.close()
+        videoclip.close()
+
+        if os.path.exists(f'C:\\Users\\90507\\Downloads\\{isim}'):
+            os.remove(f'C:\\Users\\90507\\Downloads\\{isim}')
+        else:
+            print("Dosya mevcut değil")
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    Form = QtWidgets.QWidget()
+    ui = Ui_Form()
+    ui.setupUi(Form)
+    Form.show()
+    sys.exit(app.exec_())
